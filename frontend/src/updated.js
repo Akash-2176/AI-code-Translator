@@ -19,7 +19,7 @@ function App() {
     }
 
     setLoading(true);
-    setTranslatedCode(""); // Clear previous output
+    setTranslatedCode("");
 
     try {
       const response = await fetch("http://localhost:5000/translate", {
@@ -27,7 +27,6 @@ function App() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ code, sourceLang, targetLang }),
       });
-
       const data = await response.json();
       setTranslatedCode(data.translatedCode || "Translation failed.");
     } catch (error) {
@@ -44,7 +43,6 @@ function App() {
         <img src={logo} className="App-logo" alt="logo" />
 
         <div className="w-full max-w-2xl bg-white p-6 rounded-lg shadow-md">
-          {/* Code Input Area */}
           <h2 className="text-lg font-semibold">Enter Code:</h2>
           <CodeMirror
             value={code}
@@ -52,11 +50,9 @@ function App() {
             theme={githubLight}
             extensions={[loadLanguage(sourceLang)]}
             onChange={(value) => setCode(value)}
-            className="border rounded-md text-sm text-left"
-            style={{ textAlign: 'left', fontSize: '14px' }}
+            className="border rounded-md"
           />
 
-          {/* Language Selection */}
           <div className="flex justify-between mt-4">
             <select
               className="p-2 border rounded-md"
@@ -81,7 +77,6 @@ function App() {
             </select>
           </div>
 
-          {/* Translate Button */}
           <button
             className="w-full mt-4 p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
             onClick={handleTranslate}
@@ -90,19 +85,15 @@ function App() {
             {loading ? "Translating..." : "Translate Code"}
           </button>
 
-          {/* Translated Code Output */}
           <h2 className="text-lg font-semibold mt-6">Translated Code:</h2>
-          <div>
           <CodeMirror
             value={translatedCode}
             height="200px"
             theme={githubLight}
             extensions={[loadLanguage(targetLang)]}
             readOnly
-            className="border rounded-md bg-gray-200 text-sm text-left"
-            style={{ textAlign: 'left', fontSize: '12px' }}
+            className="border rounded-md bg-gray-200"
           />
-          </div>
         </div>
       </header>
     </div>
