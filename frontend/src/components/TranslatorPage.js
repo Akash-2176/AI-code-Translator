@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
-import { translateCode } from '../api';
+// TranslatorPage.js
+import { useState, useEffect, useRef } from 'react';
+import { translateCode } from '../api'; 
 import './TranslatorPage.css';
 
 function TranslatorPage({ onLogout }) {
@@ -11,35 +12,42 @@ function TranslatorPage({ onLogout }) {
   const [error, setError] = useState('');
   const [chatHistory, setChatHistory] = useState([]);
 
+  const chatEndRef = useRef(null);
+
   useEffect(() => {
-    // Check if user is in localStorage
     const user = JSON.parse(localStorage.getItem('user'));
     if (!user || !user.token) {
       alert("Session expired. Please login again.");
-      onLogout(); // clear user from App state
+      onLogout();
     }
   }, [onLogout]);
 
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [chatHistory]);
+
   const handleTranslate = async () => {
     if (!code.trim()) {
-      return setError("Enter some code first!");
+      setError("Enter some code first!");
+      return;
     }
 
     setLoading(true);
-    setTranslatedCode('');
     setError('');
 
-    // Add the user's code to the chat history
-    const newMessage = { role: 'user', message: code };
-    setChatHistory(prev => [...prev, newMessage]);
+    const userMessage = { role: 'user', message: code };
+    setChatHistory(prev => [...prev, userMessage]);
 
     try {
       const data = await translateCode(code, sourceLang, targetLang);
-      const translatedMessage = { role: 'assistant', message: data.translatedCode || "// Translation failed." };
+      const assistantMessage = { 
+        role: 'assistant', 
+        message: data.translatedCode || "// Translation failed." 
+      };
 
-      // Add assistant's response to the chat history
-      setChatHistory(prev => [...prev, translatedMessage]);
+      setChatHistory(prev => [...prev, assistantMessage]);
       setTranslatedCode(data.translatedCode || "// Translation failed.");
+      setCode('');
     } catch (err) {
       console.error(err);
       setError("Error connecting to server. Please try again.");
@@ -48,22 +56,52 @@ function TranslatorPage({ onLogout }) {
     }
   };
 
-  const getMode = (lang) => {
-    switch (lang) {
-      case 'python': return 'python';
-      case 'javascript': return 'javascript';
-      case 'java': return 'text/x-java';
-      case 'c': return 'text/x-csrc';
-      case 'php': return 'application/x-httpd-php';
-      case 'csharp': return 'text/x-csharp';
-      default: return 'text';
-    }
+  const handleSwapLanguages = () => {
+    setSourceLang(prev => {
+      setTargetLang(prev);
+      return targetLang;
+    });
   };
+
+  const languageOptions = [
+    { label: 'Python', value: 'python' },
+    { label: 'JavaScript', value: 'javascript' },
+    { label: 'Java', value: 'java' },
+    { label: 'C', value: 'c' },
+    { label: 'PHP', value: 'php' },
+    { label: 'C#', value: 'csharp' },
+  ];
 
   return (
     <div className="translator-container">
-      <button onClick={onLogout} className="logout-button">Logout</button>
 
+      {/* Top Bar */}
+      <div className="top-bar">
+        <button onClick={onLogout} className="logout-button">Logout</button>
+
+        <div className="lang-selectors">
+          <select value={sourceLang} onChange={(e) => setSourceLang(e.target.value)}>
+            {languageOptions.map((lang) => (
+              <option key={lang.value} value={lang.value}>{lang.label}</option>
+            ))}
+          </select>
+
+          <button onClick={handleSwapLanguages} className="swap-button" title="Swap languages">
+            🔄
+          </button>
+
+          <select value={targetLang} onChange={(e) => setTargetLang(e.target.value)}>
+            {languageOptions.map((lang) => (
+              <option key={lang.value} value={lang.value}>{lang.label}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      {/* Error Display */}
+      {error && <div className="error-message">{error}</div>}
+
+      {/* Chat Section */}
       <div className="chat-container">
         <div className="chat-box">
           <h2>Chat</h2>
@@ -74,54 +112,29 @@ function TranslatorPage({ onLogout }) {
                 <pre>{msg.message}</pre>
               </div>
             ))}
+            <div ref={chatEndRef} />
           </div>
         </div>
       </div>
 
-      {error && <div className="error-message">{error}</div>}
-
-      <div className="lang-selectors">
-        <select value={sourceLang} onChange={(e) => setSourceLang(e.target.value)}>
-          <option value="python">Python</option>
-          <option value="javascript">JavaScript</option>
-          <option value="java">Java</option>
-          <option value="c">C</option>
-          <option value="php">PHP</option>
-          <option value="csharp">C#</option>
-        </select>
-
-        <button
-          onClick={() => {
-            const temp = sourceLang;
-            setSourceLang(targetLang);
-            setTargetLang(temp);
-          }}
-          className="swap-button"
-        >
-          🔄
-        </button>
-
-        <select value={targetLang} onChange={(e) => setTargetLang(e.target.value)}>
-          <option value="python">Python</option>
-          <option value="javascript">JavaScript</option>
-          <option value="java">Java</option>
-          <option value="c">C</option>
-          <option value="php">PHP</option>
-          <option value="csharp">C#</option>
-        </select>
-      </div>
-
+      {/* Code Editor */}
       <div className="editor-box">
         <textarea
           value={code}
           onChange={(e) => setCode(e.target.value)}
-          rows="5"
+          rows="6"
           placeholder="Enter your code here..."
+          disabled={loading}
         />
-        <button onClick={handleTranslate} className="translate-button" disabled={loading}>
+        <button 
+          onClick={handleTranslate} 
+          className="translate-button" 
+          disabled={loading}
+        >
           {loading ? 'Translating...' : 'Translate'}
         </button>
       </div>
+
     </div>
   );
 }

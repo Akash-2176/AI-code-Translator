@@ -3,47 +3,94 @@ body {
   margin: 0;
   padding: 0;
   font-family: Arial, sans-serif;
-  background-color: #121212; /* Dark background */
-  color: white; /* White text */
+  background-color: #121212;
+  color: white;
 }
 
+/* Container with Flex column layout */
 .translator-container {
   display: flex;
   flex-direction: column;
-  height: 100vh;
-  justify-content: space-between;
+  min-height: 100vh;
+  padding: 20px;
+  box-sizing: border-box;
 }
 
-/* Chat Container */
+/* Top bar (logout + lang selectors) */
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* Logout button */
+.logout-button {
+  background-color: #f44336;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.logout-button:hover {
+  background-color: #e57373;
+}
+
+/* Lang Selectors */
+.lang-selectors {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.lang-selectors select, .swap-button {
+  background-color: #333;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+.swap-button {
+  background-color: #3f51b5;
+  cursor: pointer;
+}
+
+.swap-button:hover {
+  background-color: #5c6bc0;
+}
+
+/* Chat Box */
 .chat-container {
-  flex-grow: 1;
-  overflow: hidden;
+  flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
 }
 
 .chat-box {
-  width: 80%;
-  max-width: 800px;
-  margin-top: 10px;
-  background-color: #1e1e1e; /* Dark grey box */
+  width: 100%;
+  max-width: 100%;
+  background-color: #1e1e1e;
   border-radius: 10px;
   padding: 20px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-  height: 70%;
+  flex-grow: 1;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
+  overflow: hidden;
 }
 
 .chat-history {
+  flex-grow: 1;
   overflow-y: auto;
-  max-height: 80%;
   margin-bottom: 10px;
 }
 
+/* Chat messages */
 .chat-message {
   background-color: #333;
   padding: 10px;
@@ -55,26 +102,21 @@ body {
 
 .chat-message.user {
   align-self: flex-end;
-  background-color: #4caf50; /* Green for user */
+  background-color: #4caf50;
 }
 
 .chat-message.assistant {
   align-self: flex-start;
-  background-color: #3f51b5; /* Blue for assistant */
+  background-color: #3f51b5;
 }
 
 .chat-message span {
   font-weight: bold;
 }
 
-/* Code Input (fixed to the bottom) */
+/* Editor (Textarea + Translate Button) */
 .editor-box {
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  background-color: #1e1e1e; /* Dark grey background */
-  padding: 15px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  margin-top: 20px;
 }
 
 .editor-box textarea {
@@ -87,71 +129,26 @@ body {
   font-size: 16px;
   resize: none;
   outline: none;
+  height: 150px;
 }
 
-.lang-selectors {
-  display: flex;
-  justify-content: space-between;
-  margin: 10px 0;
-  padding: 0 20px;
-}
-
-.lang-selectors select {
-  background-color: #333;
-  color: white;
-  border: none;
-  padding: 8px;
-  border-radius: 5px;
-  font-size: 14px;
-}
-
-.swap-button {
-  background-color: #3f51b5; /* Blue */
-  color: white;
-  border: none;
-  padding: 10px;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.swap-button:hover {
-  background-color: #5c6bc0;
-}
-
-/* Button styles */
 .translate-button {
-  background-color: #4caf50; /* Green */
+  background-color: #4caf50;
   color: white;
   border: none;
   padding: 10px 20px;
   border-radius: 5px;
   cursor: pointer;
-  margin: 20px auto;
+  margin-top: 10px;
 }
 
 .translate-button:hover {
   background-color: #66bb6a;
 }
 
+/* Error Message */
 .error-message {
   color: red;
   text-align: center;
   margin-top: 10px;
-}
-
-/* Logout button */
-.logout-button {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  background-color: #f44336; /* Red */
-  color: white;
-  padding: 10px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.logout-button:hover {
-  background-color: #e57373;
 }
